@@ -1,0 +1,95 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper: Check if user is an Admin
+    function isAdmin() {
+      return request.auth != null &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'ADMIN';
+    }
+
+    // Helper: Check if user owns the shift and it's active
+    function canTransact(shiftId) {
+      let shift = get(/databases/$(database)/documents/shifts/$(shiftId)).data;
+      return request.auth != null &&
+             shift.staffId == request.auth.uid &&
+             shift.status == 'ACTIVE';
+    }
+
+    // 1. SERVICES: Allow anyone to read so app doesn't crash on splash screen
+    match /services/{serviceId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // 2. USER PROFILES: Users read self, Admin writes all
+    match /users/{userId} {
+      allow read: if request.auth != null && (request.auth.uid == userId || isAdmin());
+      allow write: if isAdmin();
+    }
+
+    // 3. ATTENDANCE: Users write their own clock-in
+    match /attendance/{docId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && (request.auth.uid == request.resource.data.userId || isAdmin());
+    }
+
+    // 4. SHIFTS: Staff create/update their own, Admin overrides
+    match /shifts/{shiftId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null;
+      allow update: if request.auth != null && (
+        (request.resource.data.status == 'CLOSED' && resource.data.status == 'ACTIVE' && resource.data.staffId == request.auth.uid) ||
+        isAdmin()
+      );
+      allow delete: if isAdmin();
+    }
+
+    // 5. TRANSACTIONS & EXPENSES: Must have an ACTIVE shift to create (unless Admin)
+    match /shift_transactions/{txId} {
+      allow read: if request.auth != null;
+      allow create: if canTransact(request.resource.data.shiftId) || isAdmin();
+      allow update, delete: if isAdmin();
+    }
+
+    match /shift_expenses/{expId} {
+      allow read: if request.auth != null;
+      allow create: if canTransact(request.resource.data.shiftId) || isAdmin();
+      allow update, delete: if isAdmin();
+    }
+
+    // 6. APPROVAL REQUESTS: Staff create, Admin approves
+    match /approval_requests/{requestId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null;
+      allow update: if isAdmin();
+    }
+
+    // 7. AUDIT LOGS: Immutable history for Admin only
+    match /audit_logs/{logId} {
+      allow read: if isAdmin();
+      allow create: if request.auth != null;
+      allow update, delete: if false;
+    }
+
+    // 8. PRODUCTS: Sales items
+    match /products/{productId} {
+      allow read: if request.auth != null;
+      // Staff must be able to update stock counts during sales
+      allow update: if request.auth != null && (
+        isAdmin() ||
+        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['currentStock']))
+      );
+      allow create, delete: if isAdmin();
+    }
+
+    // 9. OTHER: Inventory, Investments, and Legacy Summaries
+    match /transactions/{id} { allow read: if request.auth != null; allow write: if isAdmin(); }
+    match /inventory/{id} { allow read: if request.auth != null; allow write: if isAdmin(); }
+    match /investments/{id} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null;
+      allow update, delete: if isAdmin();
+    }
+  }
+}

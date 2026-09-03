@@ -1,0 +1,34 @@
+# Implementation Tasks - CMS Enterprise Amendments
+
+- [ ] Data Layer - Models & Repositories
+    - [ ] Create `Shift.kt` model
+    - [ ] Create `Service.kt` model
+    - [ ] Create `ApprovalRequest.kt` model
+    - [ ] Create `AuditLog.kt` model
+    - [ ] Create `Transaction.kt` and `Expense.kt` models
+    - [ ] Create `ShiftRepository.kt`
+    - [ ] Create `ApprovalRepository.kt`
+    - [ ] Create `AuditRepository.kt`
+- [ ] Shift Management logic
+    - [ ] Implement Clock-In/Skip flow in `AuthViewModel`
+    - [ ] Implement Opening Balance confirmation logic
+- [ ] Financial Recording Amendments
+    - [ ] Update `TransactionViewModel` for granular transactions (Quantity, Unit Price)
+    - [ ] Implement Expense categories and recording
+    - [ ] Attach Staff/Shift metadata to all records
+- [ ] Staff Edit Approval System
+    - [ ] Implement edit request creation for staff
+    - [ ] Create Admin approval/rejection logic
+- [ ] Reporting & Reconciliation
+    - [ ] Implement Clock-Out closing balance workflow
+    - [ ] Implement Cash Reconciliation (Actual vs Expected)
+    - [ ] Update Reports for Revenue vs Expenses logic
+- [ ] UI - Professional Overhaul
+    - [ ] Clock-In Prompt Screen
+    - [ ] Opening Balance Confirmation Screen
+    - [ ] Service Price Management (with approval)
+    - [ ] Admin Approval Dashboard
+    - [ ] Staff Performance Analytics
+- [ ] Security & Integrity
+    - [ ] Update Firestore Rules
+    - [ ] Implement Audit Logging for all major actions
