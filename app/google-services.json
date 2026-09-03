@@ -1,22 +1,22 @@
 {
   "project_info": {
-    "project_number": "1075890744602",
-    "firebase_url": "https://cyber-store-5488a-default-rtdb.firebaseio.com",
-    "project_id": "cyber-store-5488a",
-    "storage_bucket": "cyber-store-5488a.firebasestorage.app"
+    "project_number": "YOUR_PROJECT_NUMBER",
+    "firebase_url": "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
+    "project_id": "YOUR_PROJECT_ID",
+    "storage_bucket": "YOUR_PROJECT_ID.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1075890744602:android:a8699cb9f1ce03b5f750a3",
+        "mobilesdk_app_id": "YOUR_MOBILE_SDK_APP_ID",
         "android_client_info": {
-          "package_name": "com.raymond.cms"
+          "package_name": "com.example.yourapp"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyBZYcSwWJLWiTz1EgUN4qY64AMhwNXPU2U"
+          "current_key": "YOUR_API_KEY"
         }
       ],
       "services": {
